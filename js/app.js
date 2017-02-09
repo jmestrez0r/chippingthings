@@ -4,81 +4,58 @@ var chipping = angular.module("chipping", []).controller('calculationsController
   };
 
 
-  $scope.boost = '0000',
-  $scope.cc = '0000',
-  $scope.cylinders = '4',
-  $scope.afr = '15',
+  $scope.boost = '';
+  $scope.cc = '';
+  $scope.cylinders = '';
+  $scope.afr = '18';
+  $scope.injectorVolume = '';
 
   $scope.maxIQValue = 0;
   $scope.safeIQValue = 0;
   $scope.safeTorque = 0;
+  $scope.maxTorque = 0;
+  $scope.estimatedPower = 0;
+  $scope.injectorLimit = 0;
 
-  var temperatureMass = [
-      0, 1292,
-      5, 1269,
-      10, 1247,
-      15, 1225,
-      20, 1204,
-      25, 1183,
-      30, 1164,
-      35, 1146
-    ];
-
-    //calculations of IQ with air density
-    $scope.calculateMaxIQ10 = function() {
-      $scope.maxIQValue = maxIQ(10);
-    };
-    $scope.calculateMaxIQ20 = function() {
-      $scope.maxIQValue = maxIQ(20);
-    };
-    $scope.calculateMaxIQ30 = function() {
-      $scope.maxIQValue = maxIQ(30);
-    };
-    $scope.calculateMaxIQ40 = function() {
-      $scope.maxIQValue = maxIQ(40);
-    };
-
-    //calculations of IQ with air density - 20%
-    $scope.calculateSafeIQ10 = function() {
-      $scope.safeIQValue = safeIQ(10);
-    };
-    $scope.calculateSafeIQ20 = function() {
-      $scope.safeIQValue = safeIQ(20);
-    };
-    $scope.calculateSafeIQ30 = function() {
-      $scope.safeIQValue = safeIQ(30);
-    };
-    $scope.calculateSafeIQ40 = function() {
-      $scope.safeIQValue = safeIQ(40);
-    };
-
-  function maxIQ(temperature) {
-    var cylinderCapacity = ($scope.cc / $scope.cylinders);
-    var totalMassAndBoost = ($scope.boost + 1000)*getMass(temperature);
-    return (totalMassAndBoost*cylinderCapacity)/$scope.afr;
+  $scope.calculate = function() {
+    $scope.maxIQ();
+    $scope.safeIQ();
+    $scope.maxTorqueCalculation();
+    $scope.safeTorqueCalculation();
+    $scope.powerCalculation();
+    $scope.injectorLimitCalculation();
   };
 
-  function safeIQ(temperature) {
+  $scope.maxIQ = function() {
     var cylinderCapacity = ($scope.cc / $scope.cylinders);
-    var totalMassAndBoost = ($scope.boost + 1000)*getMass(temperature);
+    var totalMassAndBoost = ((parseInt($scope.boost) + 1000)/1000);
+    $scope.maxIQValue =  (totalMassAndBoost*cylinderCapacity)/$scope.afr;
+  };
 
-    var totalIQ = (totalMassAndBoost*cylinderCapacity)/$scope.afr;
-
-    return totalIQ - (totalIQ*0.2);
+  $scope.safeIQ = function() {
+    var cylinderCapacity = ($scope.cc / $scope.cylinders);
+    var totalMassAndBoost = ((parseInt($scope.boost) + 1000)/1000);
+    var totalIQ =  (totalMassAndBoost*cylinderCapacity)/$scope.afr;
+    $scope.safeIQValue = totalIQ - (totalIQ*0.2);
   };
 
 
-    $scope.torqueCalculation = function() {
-      $scope.safeTorque = $scope.safeIQValue*1.5*$scope.cylinders;
-    };
+  $scope.maxTorqueCalculation = function() {
+    $scope.maxTorque = ($scope.maxIQValue*6*$scope.cylinders)/(4*0.9);
+  };
+  $scope.safeTorqueCalculation = function() {
+    $scope.safeTorque = ($scope.safeIQValue*6*$scope.cylinders)/(4*0.9);
+  };
 
-  function getMass(temperature) {
-    console.log("temperature: " + temperature);
-    for(var i = 0; i < temperatureMass.length; i++) {
-      if(temperatureMass[i] == temperature) {
-        console.log("density: " + temperatureMass[i+1]);
-        return temperatureMass[i+1];
-      }
-    }
-  }
+  $scope.powerCalculation = function() {
+    $scope.estimatedPower = parseInt(parseInt($scope.safeTorque*parseInt(4000))/parseInt(7121)) + " ~ " +
+                            parseInt(parseInt($scope.maxTorque*parseInt(4000))/parseInt(7121)) + " BHP";
+  };
+
+  $scope.injectorLimitCalculation = function() {
+    var lbsh = $scope.injectorVolume/10.5;
+    var gs = lbsh*0.125997881;
+    var gmin = gs*60;
+    $scope.injectorLimit = (gmin*1000)/4000;
+  };
 });

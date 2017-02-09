@@ -17,9 +17,6 @@
     <!-- Custom CSS -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="css/plugins/morris.css" rel="stylesheet">
-
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 </head>
@@ -48,12 +45,6 @@
                   <li class="active">
                       <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
                   </li>
-                  <li>
-                      <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
-                  </li>
-                  <li>
-                      <a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
-                  </li>
               </ul>
           </div>
           <!-- /.navbar-collapse -->
@@ -74,63 +65,87 @@
                               <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
                           </li>
                           <li class="active">
-                              <i class="fa fa-edit"></i> Forms
+                              <i class="fa fa-edit"></i> IQ Calculation
                           </li>
                       </ol>
                   </div>
               </div>
               <!-- /.row -->
 
-              <div class="row" ng-controller="calculationsController" data-ng-init="">
-                <div class="col-lg-2">
+              <div class="row" ng-controller="calculationsController" >
+                <div class="col-lg-4">
+                  <form ng-submit="calculate()">
+                    <div class="form-group">
+                        <label>Max Pretended Boost (mbar)</label>
+                        <input class="form-control" ng-model="boost">
+                        <p class="help-block">The boost that you want</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Real engine size</label>
+                        <input class="form-control" ng-model="cc">
+                        <p class="help-block">1900 not allowed, 1898 yes</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Number of cylinders</label>
+                        <input class="form-control" ng-model="cylinders">
+                        <p class="help-block">Obvious...</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pretended AFR</label>
+                        <input class="form-control" ng-model="afr">
+                        <p class="help-block">18:1 sweet spot on diesel</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Injector Volume</label>
+                        <input class="form-control" ng-model="injectorVolume">
+                    </div>
+
+                    <!-- submit button -->
+                    <button class="btn btn-default" type="submit">Calculate</button>
+                </form>
+
+                </div>
+                <div class="col-lg-3">
                   <div class="form-group">
-                      <label>Max Pretended Boost (mbar)</label>
-                      <input class="form-control" ng-model="boost">
-                      <p class="help-block">The boost that you want</p>
-                  </div>
-
-                  <div class="form-group">
-                      <label>Real engine size</label>
-                      <input class="form-control" ng-model="cc">
-                      <p class="help-block">1900 not allowed, 1898 yes</p>
-                  </div>
-
-                  <div class="form-group">
-                      <label>Number of cylinders</label>
-                      <input class="form-control" ng-model="cylinders">
-                      <p class="help-block">Obvious...</p>
-                  </div>
-
-                  <div class="form-group">
-                      <label>Pretended AFR</label>
-                      <input class="form-control" ng-model="afr">
-                      <p class="help-block">1900 not allowed, 1898 yes</p>
-                  </div>
-
-                  <div class="form-group" data-ng-init="calculateMaxIQ20()">
-                      <label>Max mg/str to that AFR with safe values</label>
-                      <input class="form-control" disabled ng-model="maxIQ">
-                      <p class="help-block">less 20% max injector capacity</p>
-                  </div>
-
-                  <div class="form-group" data-ng-init="calculateSafeIQ20()">
-                      <label>Max mg/str to that AFR without safe values</label>
-                      <input class="form-control" disabled ng-model="safeIQ">
+                      <label>Max mg/str to that AFR</label>
+                      <input class="form-control" disabled ng-model="maxIQValue">
                       <p class="help-block">max injector capacity</p>
                   </div>
-
-
-                  <div class="form-group" data-ng-init="torqueCalculation()">
-                      <label>Torque Calculation</label>
+                  <div class="form-group">
+                      <label>Max Torque</label>
+                      <input class="form-control" disabled ng-model="maxTorque">
+                      <p class="help-block">max torque</p>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="form-group">
+                      <label>Safe mg/str to that AFR</label>
+                      <input class="form-control" disabled ng-model="safeIQValue">
+                      <p class="help-block">less 20% max injector capacity</p>
+                  </div>
+                  <div class="form-group">
+                      <label>Safe Torque</label>
                       <input class="form-control" disabled ng-model="safeTorque">
                       <p class="help-block">safe torque</p>
                   </div>
-
+                </div>
+                <div class="col-lg-2">
+                  <div class="form-group">
+                      <label>Expected power</label>
+                      <input class="form-control" disabled ng-model="estimatedPower">
+                  </div>
+                  <div class="form-group">
+                      <label>Injetor limit</label>
+                      <input class="form-control" disabled ng-model="injectorLimit">
+                  </div>
+                </div>
+                </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
     <!-- /#wrapper -->
 
